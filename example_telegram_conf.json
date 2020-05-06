@@ -1,0 +1,15 @@
+{
+  "bot_token": "YOUR_TELEGRAM_BOT_TOKEN",
+  "project_name": "PROJECT_NAME",
+  "use_proxy": true,
+  "request_kwargs": {
+    "proxy_url": "socks5h://0.0.0.0:8000",
+    "urllib3_proxy_kwargs": {
+      "username": "MY_USERNAME",
+      "password": "MY_PASSWORD"
+    }
+  },
+  "chat_ids": {
+    "MY_TELEGRAM_USERNAME": 123456789
+  }
+}

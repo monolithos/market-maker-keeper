@@ -274,6 +274,9 @@ class PriceFeedFactory:
             return AveragePriceFeed([SetzerPriceFeed('kraken', expiry=price_feed_expiry_argument),
                                      SetzerPriceFeed('gemini', expiry=price_feed_expiry_argument)])
 
+        elif price_feed_argument == 'eth_rub-setzer':
+            return SetzerPriceFeed('ETHRUB', expiry=price_feed_expiry_argument)
+
         elif price_feed_argument == 'eth_dai-tub':
             if tub is not None:
                 price_feed = TubPriceFeed(tub)
