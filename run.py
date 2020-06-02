@@ -8,8 +8,8 @@ BASE_PATH = os.path.dirname(__file__)
 
 RPC_HOST = "https://kovan.infura.io/v3/683836c8b9384898a9f99d483ae389bc"
 ETH_FROM = "0xC0CCab7430aEc0C30E76e1dA596263C3bdD82932"
-KEY_FILE = "/home/captain/development/dss-deploy-scripts/keystore.json,"
-PASS_FILE = "/home/captain/development/dss-deploy-scripts/p.pass"
+KEY_FILE = "/home/captain/keystore/9ae_keystore.json"
+PASS_FILE = "/home/captain/keystore/9ae_pass.pass"
 
 PRICE_FEED = "eth_rub-setzer"
 OASIS_ADDRESS = "0x3925970aE340255807dae79bfAd5C3b83F7aDB7b"
@@ -34,7 +34,7 @@ if __name__ == '__main__':
         '--rpc-host', 'https://kovan.infura.io/v3/683836c8b9384898a9f99d483ae389bc',
 
         '--eth-from', '0xC0CCab7430aEc0C30E76e1dA596263C3bdD82932',
-        '--eth-key', f'key_file={KEY_FILE}pass_file={PASS_FILE}',
+        '--eth-key', f'key_file={KEY_FILE},pass_file={PASS_FILE}',
 
         '--price-feed', PRICE_FEED,
         '--oasis-address', OASIS_ADDRESS,
