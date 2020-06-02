@@ -277,6 +277,12 @@ class PriceFeedFactory:
         elif price_feed_argument == 'eth_rub-setzer':
             return SetzerPriceFeed('ETHRUB', expiry=price_feed_expiry_argument)
 
+        elif price_feed_argument == 'mdt_rub-setzer':
+            return SetzerPriceFeed('MDTRUB', expiry=price_feed_expiry_argument)
+
+        elif price_feed_argument == 'mdt_mcr-setzer':
+            return SetzerPriceFeed('MDTMCR', expiry=price_feed_expiry_argument)
+
         elif price_feed_argument == 'eth_dai-tub':
             if tub is not None:
                 price_feed = TubPriceFeed(tub)
