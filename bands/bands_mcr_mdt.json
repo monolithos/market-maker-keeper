@@ -1,0 +1,47 @@
+{
+    "_buyToken": "MCR",
+    "buyBands": [
+        {
+            "minMargin": 0.005,
+            "avgMargin": 0.01,
+            "maxMargin": 0.02,
+            "minAmount": 100.0,
+            "avgAmount": 1000.0,
+            "maxAmount": 2000.0,
+            "dustCutoff": 0.0
+        },
+        {
+            "minMargin": 0.02,
+            "avgMargin": 0.025,
+            "maxMargin": 0.03,
+            "minAmount": 100.0,
+            "avgAmount": 1000.0,
+            "maxAmount": 2000.0,
+            "dustCutoff": 0.0
+        }
+    ],
+    "buyLimits": [ { "period": "1h", "amount": 1000 }, { "period": "1d", "amount": 1500.0 } ],
+
+    "_sellToken": "MDT",
+    "sellBands": [
+        {
+            "minMargin": 0.005,
+            "avgMargin": 0.01,
+            "maxMargin": 0.02,
+            "minAmount": 100.0,
+            "avgAmount": 1000.0,
+            "maxAmount": 2000.0,
+            "dustCutoff": 0.0
+        },
+        {
+            "minMargin": 0.02,
+            "avgMargin": 0.025,
+            "maxMargin": 0.05,
+            "minAmount": 100.0,
+            "avgAmount": 1000.0,
+            "maxAmount": 2000.0,
+            "dustCutoff": 0.0
+        }
+    ],
+    "sellLimits": [ { "period": "1h", "amount": 1000.0 }, { "period": "1d", "amount": 2000.0 } ]
+}
