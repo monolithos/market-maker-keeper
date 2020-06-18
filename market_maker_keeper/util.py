@@ -19,7 +19,7 @@ import logging
 
 import re
 
-from telegram_log_handler import TelegramHandler
+# from telegram_log_handler import TelegramHandler
 
 
 def setup_logging(arguments):
@@ -30,23 +30,23 @@ def setup_logging(arguments):
     logging.getLogger('requests.packages.urllib3.connectionpool').setLevel(logging.INFO)
 
 
-def get_telegram_handler(arguments):
-    with open(arguments.telegram_log_config_file, 'r') as f:
-        telegram_log = json.loads(f.read())
-
-    telegram_handler = TelegramHandler(
-        bot_token=telegram_log['bot_token'],
-        chat_ids=telegram_log['chat_ids'],
-        project_name=telegram_log['project_name'],
-        use_proxy=telegram_log['use_proxy'],
-        request_kwargs=telegram_log['request_kwargs']
-
-    )
-
-    telegram_handler.setLevel(logging.WARNING)
-
-    return telegram_handler
-    # self.logger.addHandler(telegram_handler)
+# def get_telegram_handler(arguments):
+#     with open(arguments.telegram_log_config_file, 'r') as f:
+#         telegram_log = json.loads(f.read())
+#
+#     telegram_handler = TelegramHandler(
+#         bot_token=telegram_log['bot_token'],
+#         chat_ids=telegram_log['chat_ids'],
+#         project_name=telegram_log['project_name'],
+#         use_proxy=telegram_log['use_proxy'],
+#         request_kwargs=telegram_log['request_kwargs']
+#
+#     )
+#
+#     telegram_handler.setLevel(logging.WARNING)
+#
+#     return telegram_handler
+#     # self.logger.addHandler(telegram_handler)
 
 
 def sanitize_url(url):

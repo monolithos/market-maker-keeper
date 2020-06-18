@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/makerdao/market-maker-keeper.svg?branch=master)](https://travis-ci.org/makerdao/market-maker-keeper)
 [![codecov](https://codecov.io/gh/makerdao/market-maker-keeper/branch/master/graph/badge.svg)](https://codecov.io/gh/makerdao/market-maker-keeper)
 
-The _DAI Stablecoin System_ incentivizes external agents, called _keepers_,
+The _MCR Stablecoin System_ incentivizes external agents, called _keepers_,
 to automate certain operations around the Ethereum blockchain.
 
 # Market Maker Keeper Setup Guide 
@@ -27,15 +27,17 @@ to automate certain operations around the Ethereum blockchain.
 13. License
 
 ## 1. Introduction
-A big part of the DAI Stablecoin System (DSS) is the incentivization of external agents, called **Keepers** (which can be human but are typically automated bots). Market Maker Keepers work by creating a series of orders in so-called **bands** (defined later), which are configured with a JSON file containing parameters like spreads, maximum engagement, etc. In short, the `market-maker-keeper` repository is a set of Keepers that facilitate market making on exchanges. For example, trading Dai motivated by the expected long-term convergence toward the indicated `Target Price`. This guide is dedicated to showing you how to create your very own Market Maker Keeper Bot as well as educate the community and help both users and developers understand the value of this incredible software. We are proud to say that all of the code needed to get a Market Maker Keeper bot up and running is open-sourced.
+A big part of the MCR Stablecoin System (DSS) is the incentivization of external agents, called **Keepers** (which can be human but are typically automated bots). Market Maker Keepers work by creating a series of orders in so-called **bands** (defined later), which are configured with a JSON file containing parameters like spreads, maximum engagement, etc. In short, the `market-maker-keeper` repository is a set of Keepers that facilitate market making on exchanges. For example, trading Mcr motivated by the expected long-term convergence toward the indicated `Target Price`. This guide is dedicated to showing you how to create your very own Market Maker Keeper Bot as well as educate the community and help both users and developers understand the value of this incredible software. We are proud to say that all of the code needed to get a Market Maker Keeper bot up and running is open-sourced.
 
 ### List of current exchanges that Market Maker Keeper Bots can be built for
 
 - Bitso (`bitso-market-maker-keeper`)
 - Bittrex (`bittrex-market-maker-keeper`)
 - Coinbase (`coinbase-market-maker-keeper`)
+- Coinone (`coinone-market-maker-keeper`)
 - DDEX (`ddex-market-maker-keeper`)
 - DyDx (`dydx-market-maker-keeper`)
+- ErisX (`erisx-market-maker-keeper`)
 - EtherDelta (`etherdelta-market-maker-keeper`)
 - Ethfinex (`ethfinex-market-maker-keeper`)
 - Etoro (`etoro-market-maker-keeper`)
@@ -64,18 +66,14 @@ A big part of the DAI Stablecoin System (DSS) is the incentivization of external
 
 1. **Clone the `market-maker-keeper` repository and switch into its directory:**
 ```
-git clone https://github.com/makerdao/market-maker-keeper.git
+git clone https://github.com/monolithos/market-maker-keeper.git
 cd market-maker-keeper 
 ```
-2. **Initializing the git submodules that will bring in both the pymaker and the pyexchange library.** 
-```
-git submodule update --init --recursive
-``` 
-3. **Check to make sure you have the correct version (Python 3.6.6) of Python by running:**
+2. **Check to make sure you have the correct version (Python 3.6.6) of Python by running:**
 ```
 python3 -V
 ```
-4. **To set up the virtual environment and install requirements, run the following script:**
+3. **To set up the virtual environment and install requirements, run the following script:**
 ```
 ./install.sh
 ```
@@ -95,7 +93,7 @@ python3 -V
 
 ### Other **Potential Installation Issues:**
 
-Read the following document for other known Ubuntu and macOS issues ([here](https://github.com/makerdao/pymaker)).
+Read the following document for other known Ubuntu and macOS issues ([here](https://github.com/monolithos/pymaker)).
 
 
 ## 4. Testing
@@ -210,11 +208,11 @@ To start, take the sample configuration file below and copy-paste it to a `.json
 
 **Sample bands.json file containing two Bands**
 
-This example shows bands for the ETH-DAI pair, where ETH represents the base currency and DAI as the quote currency: 
+This example shows bands for the ETH-MCR pair, where ETH represents the base currency and MCR as the quote currency: 
 
 ```
 {
-    "_buyToken": "DAI",
+    "_buyToken": "MCR",
     "buyBands": [
         {
             "minMargin": 0.005,
@@ -276,30 +274,30 @@ As mentioned above, there is one parameter in the configuration file (*`dustCuto
 
 ### Bands Example
 
-Here, we will be going over some example interactions using the **bands.json** file described above. These examples assume that it is denominated in DAI and that the price of 10 DAI is 1 ETH.
+Here, we will be going over some example interactions using the **bands.json** file described above. These examples assume that it is denominated in MCR and that the price of 10 MCR is 1 ETH.
 
 **Using Band 1**
 
-- If we look at the first buy band, the initial buy order will be 30 DAI (*`avgAmount`*) with the price of -> `price - (price * avgMargin)` -> `0.1 - (0.1 * 0.01)` -> 0.099 ETH per Dai.
-- If the `buy` order listed above (30 DAI @ 0.099 ETH) gets partially filled (15 DAI are purchased), then we will have (15 DAI remaining in the order). However, this amount is below the band's *`minAmount`* (20 DAI), therefore, another whole order of 15 DAI will be placed on the exchange at the same price of 0.099 ETH.
+- If we look at the first buy band, the initial buy order will be 30 MCR (*`avgAmount`*) with the price of -> `price - (price * avgMargin)` -> `0.1 - (0.1 * 0.01)` -> 0.099 ETH per MCR.
+- If the `buy` order listed above (30 MCR @ 0.099 ETH) gets partially filled (15 MCR are purchased), then we will have (15 MCR remaining in the order). However, this amount is below the band's *`minAmount`* (20 MCR), therefore, another whole order of 15 MCR will be placed on the exchange at the same price of 0.099 ETH.
 - In addition to `buy` orders, when the Market Maker Keeper starts up, two `sell` orders will also be placed.
 
 **Using Band 2**
 
-- For ease of explanation, let's assume we are selling ETH that is priced at 100.00 DAI (5 ETH @ 101 DAI and 6 ETH @ 102.5 DAI).
-- Now imagine a situation where the price of ETH suddenly drops to 97.50 DAI, pushing the bands downward. In this scenario, the second band will then start working and will become responsible for both of the `sell` orders, as they fit in between the second band's *`minMargin`* and *`maxMargin`* amounts.
+- For ease of explanation, let's assume we are selling ETH that is priced at 100.00 MCR (5 ETH @ 101 MCR and 6 ETH @ 102.5 MCR).
+- Now imagine a situation where the price of ETH suddenly drops to 97.50 MCR, pushing the bands downward. In this scenario, the second band will then start working and will become responsible for both of the `sell` orders, as they fit in between the second band's *`minMargin`* and *`maxMargin`* amounts.
 
 **The Market Maker Keeper will now reset it's bands by performing the following actions:** 
 
-1. Creating an order in **Band 1** (5 ETH @ 98.475 DAI) using *`avgMargin`* and *`avgAmount`*.
-2. Cancelling the second order (5 ETH @ 102.5 DAI) (which is now in **Band 2**) becuase *`maxMargin`* has been breached (when `price + (price * maxMargin) = orderPrice` -> `97.5 + (97.5 * 0.05)` -> 102.375 > 102.5).
-3. Keep the first order (5 ETH @ 101 DAI), which is now in **Band 2** because it is within *`minMargin`* and *`maxMargin`* of **Band 2.**
-4.  Creating an order in **Band 2** (1 ETH @ 99.937 DAI) using *`avgMargin`* and *`avgAmount`.* 
+1. Creating an order in **Band 1** (5 ETH @ 98.475 MCR) using *`avgMargin`* and *`avgAmount`*.
+2. Cancelling the second order (5 ETH @ 102.5 MCR) (which is now in **Band 2**) becuase *`maxMargin`* has been breached (when `price + (price * maxMargin) = orderPrice` -> `97.5 + (97.5 * 0.05)` -> 102.375 > 102.5).
+3. Keep the first order (5 ETH @ 101 MCR), which is now in **Band 2** because it is within *`minMargin`* and *`maxMargin`* of **Band 2.**
+4.  Creating an order in **Band 2** (1 ETH @ 99.937 MCR) using *`avgMargin`* and *`avgAmount`.* 
 
 **This results in a total of 3 placed orders:**
-- **Band 1** -> (5 ETH @ 98.475 DAI)
-- **Band 2** -> (5 ETH @ 101 DAI)
-- **Band 2** → ((1 ETH @ 99.837 DAI)
+- **Band 1** -> (5 ETH @ 98.475 MCR)
+- **Band 2** -> (5 ETH @ 101 MCR)
+- **Band 2** → ((1 ETH @ 99.837 MCR)
 
 ## 6. Order Rate Limitation
 
@@ -329,7 +327,7 @@ In the case of the data templating language, think of this like a pre-processing
 {
   "_price": 10,
 
-  "_buyToken": "DAI",
+  "_buyToken": "MCR",
   "buyBands": [
     {
       "minMargin": 0.020,
@@ -366,7 +364,7 @@ As of today, these are the possible values of this argument ( existing public fe
 - `eth_dai-pair` - uses the price from the GDAX (Coinbase) WebSocket ETH/DAI price feed.
 - `eth_dai-pair-midpoint` - uses the midpoint orderbook price from the GDAX (Coinbase) WebSocket ETH/DAI pair.
 - `dai_eth` - inverse of the `eth_dai` price feed.
-- `dai_eth-setzer` - inverse of the `eth_dai-setzer` price feed.
+- `eth_rub-setzer` - inverse of the `eth_rub-setzer` price feed.
 - `dai_eth-tub` - inverse of the `eth_dai-tub` price feed.
 - `btc_dai` - uses the price from the GDAX (Coinbase) WebSocket BTC/USD price feed.
 - `dai_btc` - inverse of the `btc_dai` price feed.
@@ -400,7 +398,7 @@ The below file should be copy and pasted into a new file within the root directo
         --tub-address 0x448a5065aebb8e423f0896e6c5d525c040f59af3 \
         --oasis-address 0x14fbca95be7e99c15cc2996c6c9d841e54b79425 \
         --price-feed fixed:200 \
-        --buy-token-address [address of the quote token, could be DAI] \
+        --buy-token-address [address of the quote token, could be MCR] \
         --sell-token-address [address of the base token, could be WETH] \
         --config [path to the json bands configuration file, e.g. bands.json] \
         --smart-gas-price \
@@ -409,6 +407,15 @@ The below file should be copy and pasted into a new file within the root directo
 
 
 ```
+OR
+
+change settings for run.py
+AND
+```bash
+    source venv/bin/activate
+    python3.6 run.py 
+```
+
 -  Ensure that you retrieve and paste your correct contract addresses when using the above snippet.
 - `--eth-key ${ACCOUNT_KEY}` - includes both the `.json` file (account.json) of your account and a `.pass` file (ex: account.pass) that contains your password in plaintext.
 - If you do not have an account, you can use [MyEtherWallet](https://www.myetherwallet.com/) on Kovan and export the account details (by means of the Keystore file method). Make sure that you download the .json file to your local machine as this is what you will need to set up the account.
@@ -462,7 +469,7 @@ https://docs.docker.com/compose/install/
 ```
 3. **Clone the `market-maker-keeper` repository and switch into its directory:**
 ```
-git clone https://github.com/makerdao/market-maker-keeper.git
+git clone https://github.com/monolithos/market-maker-keeper.git
 cd market-maker-keeper 
 ```
 4. **Initializing the git submodules that will bring in both the pymaker and the pyexchange library.** 
@@ -480,7 +487,7 @@ mkdir docker-config
 ```    
 7. **Create environment variables.**  
 Create a file named `.env` and add all environment variables required to run keeper.
-`docker-compose.yml` file contains a configuration example for Coinbase ETH-DAI keeper that can be started with an `.env` file similar with the one below
+`docker-compose.yml` file contains a configuration example for Coinbase ETH-MCR keeper that can be started with an `.env` file similar with the one below
 ```
 COINBASE_API_KEY=API_KEY_HERE
 COINBASE_SECRET_KEY=SECRET_KEY_HERE
@@ -499,14 +506,9 @@ where:
 docker-compose up coinbase-ethdai-keeper
 ```
 
-## 12. Support
+## 12. License
 
-**We are here to help!**
-We welcome any questions about the market making in the [#keeper](https://chat.makerdao.com/channel/keeper) channel in the Maker Chat. 
-
-## 13. License
-
-See [COPYING](https://github.com/makerdao/market-maker-keeper/blob/master/COPYING) file.
+See [COPYING](https://github.com/monoluthos/market-maker-keeper/blob/master/COPYING) file.
 
 ### Disclaimer
 

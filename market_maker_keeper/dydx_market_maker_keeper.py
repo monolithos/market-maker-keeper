@@ -17,16 +17,21 @@
 
 import argparse
 import logging
+import operator
 import sys
 import time
 
-from eth_utils import from_wei
+from functools import reduce
 
 from pyexchange.dydx import DydxApi, Order
 from pymaker.numeric import Wad
 
 from market_maker_keeper.cex_api import CEXKeeperAPI
+from market_maker_keeper.band import Bands
 
+
+def total_amount(orders: list) -> Wad:
+    return reduce(operator.add, map(lambda order: order.remaining_sell_amount, orders), Wad(0))
 
 class DyDxMarketMakerKeeper(CEXKeeperAPI):
     """
@@ -34,7 +39,6 @@ class DyDxMarketMakerKeeper(CEXKeeperAPI):
     Although portions of DyDx are onchain, 
     full order book functionality requires offchain components.
     """
-
     logger = logging.getLogger()
 
     def __init__(self, args: list):
@@ -87,6 +91,8 @@ class DyDxMarketMakerKeeper(CEXKeeperAPI):
         self.dydx_api = DydxApi(node=self.arguments.dydx_api_server,
                                 private_key=self.arguments.dydx_private_key)
 
+        self.market_info = self.dydx_api.get_markets()
+
         super().__init__(self.arguments, self.dydx_api)
 
     def pair(self):
@@ -104,6 +110,12 @@ class DyDxMarketMakerKeeper(CEXKeeperAPI):
 
         return list(filter(lambda x: x['currency'] == token.upper(), our_balances))[0]['wad']
 
+    def _should_place_order(self, new_order: dict) -> bool:
+        amount = new_order.pay_amount if new_order.is_sell else new_order.buy_amount
+        minimumOrderSize = float(self.market_info[self.pair().upper()]['minimumOrderSize'])
+        converted_minimum = minimumOrderSize / 10 ** 17
+        return True if Wad.__float__(amount) > converted_minimum else False
+
     def place_orders(self, new_orders):
         def place_order_function(new_order_to_be_placed):
             amount = new_order_to_be_placed.pay_amount if new_order_to_be_placed.is_sell else new_order_to_be_placed.buy_amount
@@ -112,10 +124,99 @@ class DyDxMarketMakerKeeper(CEXKeeperAPI):
                                                  price=Wad.__float__(new_order_to_be_placed.price),
                                                  amount=Wad.__float__(amount))
 
-            return Order(str(order_id), int(time.time()), self.pair(), new_order_to_be_placed.is_sell, new_order_to_be_placed.price, amount)
+            return Order(str(order_id), int(time.time()), self.pair(), new_order_to_be_placed.is_sell,
+                         new_order_to_be_placed.price, amount)
 
         for new_order in new_orders:
-            self.order_book_manager.place_order(lambda new_order=new_order: place_order_function(new_order))
+            amount = new_order.pay_amount if new_order.is_sell else new_order.buy_amount
+            side = 'Sell' if new_order.is_sell else 'Buy'
+            minimumOrderSize = float(self.market_info[self.pair().upper()]['minimumOrderSize'])
+            if self._should_place_order(new_order):
+                self.order_book_manager.place_order(lambda new_order=new_order: place_order_function(new_order))
+            else:
+                logging.info(f"New {side} Order below size minimum of {minimumOrderSize}. Order of amount {amount} ignored.")
+
+    def synchronize_orders(self):
+        bands = Bands.read(self.bands_config, self.spread_feed, self.control_feed, self.history)
+        order_book = self.order_book_manager.get_order_book()
+        target_price = self.price_feed.get_price()
+
+        # Cancel orders
+        cancellable_orders = bands.cancellable_orders(our_buy_orders=self.our_buy_orders(order_book.orders),
+                                                      our_sell_orders=self.our_sell_orders(order_book.orders),
+                                                      target_price=target_price)
+        if len(cancellable_orders) > 0:
+            self.order_book_manager.cancel_orders(cancellable_orders)
+            return
+
+        # Do not place new orders if order book state is not confirmed
+        if order_book.orders_being_placed or order_book.orders_being_cancelled:
+            self.logger.debug("Order book is in progress, not placing new orders")
+            return
+
+        """
+        Check that placing new orders doesn't exceed available balance and won't require margin. 
+        This is done separately for each band, to account for potential differences in configuration.
+        
+        On DyDx, balances aren't lowered if an order is placed,
+        so we need to manually adjust balance with amounts in open orders. 
+        Since keepers can be running on multiple pairs, orders across all pairs must be checked.
+        
+        If a potential new order would exceed available balance, 
+        setting the minimum band amount to 0 will block the order through band.py conditional checks. 
+        The band.min amount would then be reset to the original configuration on the next iteration of synchronize_orders().
+
+        If a new band is valid, we need to then make sure that the available balance calculation
+        is adjusted for the potential new order.
+        """
+
+        total_in_buy_orders = total_amount(self.our_buy_orders(order_book.orders))
+        total_in_sell_orders = total_amount(self.our_sell_orders(order_book.orders))
+        for pair in self.market_info.keys():
+            other_pair_orders = []
+            if self.pair().lower() != pair.lower():
+                other_pair_orders = self.dydx_api.get_orders(pair)
+
+            if self.token_buy() in pair.lower():
+                total_in_buy_orders += total_amount(self.our_buy_orders(other_pair_orders))
+            if self.token_sell() in pair.lower():
+                total_in_sell_orders += total_amount(self.our_sell_orders(other_pair_orders))
+
+        our_buy_orders = self.our_buy_orders(order_book.orders)
+        our_sell_orders = self.our_sell_orders(order_book.orders)
+        our_buy_balance = self.our_available_balance(order_book.balances, self.token_buy())
+        our_sell_balance = self.our_available_balance(order_book.balances, self.token_sell())
+
+        for band in bands.buy_bands:
+            orders = [order for order in our_buy_orders if band.includes(order, target_price.buy_price)]
+            band_total_remaining = total_amount(orders)
+            buy_limit_amount = bands.buy_limits.available_limit(time.time())
+            available_balance = our_buy_balance - total_in_buy_orders
+            if band_total_remaining < band.min_amount:
+                pay_amount = Wad.min(band.avg_amount - band_total_remaining, available_balance, buy_limit_amount)
+                if total_in_buy_orders + pay_amount > available_balance:
+                    band.min_amount = Wad(0)
+                else:
+                    our_buy_balance -= pay_amount
+
+        for band in bands.sell_bands:
+            orders = [order for order in our_sell_orders if band.includes(order, target_price.sell_price)]
+            band_total_remaining = total_amount(orders)
+            sell_limit_amount = bands.sell_limits.available_limit(time.time())
+            available_balance = our_sell_balance - total_in_sell_orders
+            if band_total_remaining < band.min_amount:
+                pay_amount = Wad.min(band.avg_amount - band_total_remaining, available_balance, sell_limit_amount)
+                if total_in_sell_orders + pay_amount > available_balance:
+                    band.min_amount = Wad(0)
+                else:
+                    our_sell_balance -= pay_amount
+
+        # Place new orders
+        self.place_orders(bands.new_orders(our_buy_orders=our_buy_orders,
+                                           our_sell_orders=our_sell_orders,
+                                           our_buy_balance=self.our_available_balance(order_book.balances, self.token_buy()),
+                                           our_sell_balance=self.our_available_balance(order_book.balances, self.token_sell()),
+                                           target_price=target_price)[0])
 
 
 if __name__ == '__main__':
