@@ -6,34 +6,61 @@ from market_maker_keeper.oasis_market_maker_keeper import OasisMarketMakerKeeper
 BASE_PATH = os.path.dirname(__file__)
 
 
-RPC_HOST = "https://kovan.infura.io/v3/683836c8b9384898a9f99d483ae389bc"
-ETH_FROM = "0xC0CCab7430aEc0C30E76e1dA596263C3bdD82932"
-KEY_FILE = "/home/captain/keystore/9ae_keystore.json"
-PASS_FILE = "/home/captain/keystore/9ae_pass.pass"
+# NETWORK = "mainnet"
+NETWORK = "kovan"
+
+
+if NETWORK.lower() == "kovan":
+    RPC_HOST = "https://kovan.infura.io/v3/****"
+    ETH_FROM = "0x0000000000000000000000000000000000000000"
+    KEY_FILE = "/PATH/TO/KEY/FILE.json"
+    PASS_FILE = "/PATH/TO/PASS/FILE.pass"
+
+    # Market settings
+    OASIS_ADDRESS = "0x3925970aE340255807dae79bfAd5C3b83F7aDB7b"
+    BUY_TOKEN = {
+        "name": "MCR",
+        "decimal": 18,
+        "address": "0xEd1eC45E22e5D4AD23D6f60878549a8139A4B3AC"
+    }
+
+    SELL_TOKEN = {
+        "name": "WETH",
+        "decimal": 18,
+        "address": "0xd0a1e359811322d97991e03f863a0c30c2cf029c"
+    }
+elif NETWORK.lower() == "mainnet":
+    RPC_HOST = "https://mainnet.infura.io/v3/*******"
+    ETH_FROM = "0x0000000000000000000000000000000000000000"
+    KEY_FILE = "/PATH/TO/KEY/FILE.json"
+    PASS_FILE = "/PATH/TO/PASS/FILE.pass"
+
+    # Market settings
+    OASIS_ADDRESS = "0x3925970aE340255807dae79bfAd5C3b83F7aDB7b"
+    BUY_TOKEN = {
+        "name": "MCR",
+        "decimal": 18,
+        "address": "0xEd1eC45E22e5D4AD23D6f60878549a8139A4B3AC"
+    }
+
+    SELL_TOKEN = {
+        "name": "WETH",
+        "decimal": 18,
+        "address": "0xd0a1e359811322d97991e03f863a0c30c2cf029c"
+    }
+else:
+    raise Exception('NOT SUPPORTED NETWORK')
+
 
 PRICE_FEED = "eth_rub-setzer"
-OASIS_ADDRESS = "0x3925970aE340255807dae79bfAd5C3b83F7aDB7b"
-
-BUY_TOKEN = {
-    "name": "MCR",
-    "decimal": 18,
-    "address": "0xEd1eC45E22e5D4AD23D6f60878549a8139A4B3AC"
-}
-
-SELL_TOKEN = {
-    "name": "WETH",
-    "decimal": 18,
-    "address": "0xd0a1e359811322d97991e03f863a0c30c2cf029c"
-}
-
 CONFIG_FILE = "bands_mcr_eth.json"
 
 
 if __name__ == '__main__':
     oasis_keeper_args = [
-        '--rpc-host', 'https://kovan.infura.io/v3/683836c8b9384898a9f99d483ae389bc',
+        '--rpc-host', RPC_HOST,
 
-        '--eth-from', '0xC0CCab7430aEc0C30E76e1dA596263C3bdD82932',
+        '--eth-from', ETH_FROM,
         '--eth-key', f'key_file={KEY_FILE},pass_file={PASS_FILE}',
 
         '--price-feed', PRICE_FEED,
@@ -52,6 +79,6 @@ if __name__ == '__main__':
         '--ethgasstation-api-key', "API_KEY_HERE"
         '--smart-gas-price'
         # '--debug',
-        # '--telegram-log-config-file', '/home/captain/development/makerdao_python/market-maker-keeper/telegram_conf.json'
+        # '--telegram-log-config-file', os.path.join(BASE_PATH, 'telegram_conf.json')
     ]
     OasisMarketMakerKeeper(oasis_keeper_args).main()

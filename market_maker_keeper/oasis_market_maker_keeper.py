@@ -18,11 +18,8 @@
 import argparse
 import logging
 import sys
-import json
 
 from web3 import Web3, HTTPProvider
-
-from telegram_log_handler import TelegramHandler
 
 from market_maker_keeper.band import Bands, NewOrder
 from market_maker_keeper.control_feed import create_control_feed
@@ -141,22 +138,6 @@ class OasisMarketMakerKeeper:
 
         parser.add_argument("--telegram-log-config-file", type=str, required=False,
                             help="config file for send logs to telegram chat (e.g. 'telegram_conf.json')", default=None)
-
-    def start_telegram_logger(self):
-        with open(self.arguments.telegram_log_config_file, 'r') as f:
-            telegram_log = json.loads(f.read())
-
-        telegram_handler = TelegramHandler(
-            bot_token=telegram_log['bot_token'],
-            chat_ids=telegram_log['chat_ids'],
-            project_name=telegram_log['project_name'],
-            use_proxy=telegram_log['use_proxy'],
-            request_kwargs=telegram_log['request_kwargs']
-
-        )
-
-        telegram_handler.setLevel(logging.ERROR)
-        self.logger.addHandler(telegram_handler)
 
     def __init__(self, args: list, **kwargs):
         parser = argparse.ArgumentParser(prog='oasis-market-maker-keeper')
