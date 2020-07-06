@@ -122,7 +122,7 @@ class OasisMarketMakerKeeper:
         parser.add_argument("--min-eth-balance", type=float, default=0,
                             help="Minimum ETH balance below which keeper will cease operation")
 
-        parser.add_argument("--gas-price", type=int, default=0,
+        parser.add_argument("--gas-price", type=int, default=50000000000,
                             help="Gas price (in Wei)")
 
         parser.add_argument("--smart-gas-price", dest='smart_gas_price', action='store_true',
