@@ -28,8 +28,8 @@
             "minMargin": 0.005,
             "avgMargin": 0.01,
             "maxMargin": 0.02,
-            "minAmount": 2.5,
-            "avgAmount": 5.0,
+            "minAmount": 0.005,
+            "avgAmount": 0.01,
             "maxAmount": 7.5,
             "dustCutoff": 0.0
         },
@@ -37,8 +37,8 @@
             "minMargin": 0.02,
             "avgMargin": 0.025,
             "maxMargin": 0.05,
-            "minAmount": 4.0,
-            "avgAmount": 6.0,
+            "minAmount": 0.02,
+            "avgAmount": 0.03,
             "maxAmount": 8.0,
             "dustCutoff": 0.0
         }
