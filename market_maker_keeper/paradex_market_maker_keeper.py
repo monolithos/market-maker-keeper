@@ -48,14 +48,9 @@ class ParadexMarketMakerKeeper:
 
     logger = logging.getLogger()
 
-    def __init__(self, args: list, **kwargs):
-        parser = argparse.ArgumentParser(prog='paradex-market-maker-keeper')
-
-        parser.add_argument("--rpc-host", type=str, default="localhost",
-                            help="JSON-RPC host (default: `localhost')")
-
-        parser.add_argument("--rpc-port", type=int, default=8545,
-                            help="JSON-RPC port (default: `8545')")
+    def add_arguments(self, parser):
+        parser.add_argument("--rpc-host", type=str, default="http://localhost:8545",
+                            help="JSON-RPC host (default: `http://localhost:8545`)")
 
         parser.add_argument("--rpc-timeout", type=int, default=10,
                             help="JSON-RPC timeout (in seconds, default: 10)")
@@ -69,8 +64,8 @@ class ParadexMarketMakerKeeper:
         parser.add_argument("--exchange-address", type=str, required=True,
                             help="Ethereum address of the 0x Exchange contract")
 
-        parser.add_argument("--paradex-api-server", type=str, default='https://api.paradex.io/consumer',
-                            help="Address of the Paradex API (default: 'https://api.paradex.io/consumer')")
+        parser.add_argument("--paradex-api-server", type=str, default='https://api.paradex.io/api/v1/',
+                            help="Address of the Paradex API (default: 'https://api.paradex.io/api/v1/')")
 
         parser.add_argument("--paradex-api-key", type=str, required=True,
                             help="API key for the Paradex API")
@@ -131,11 +126,23 @@ class ParadexMarketMakerKeeper:
         parser.add_argument("--debug", dest='debug', action='store_true',
                             help="Enable debug output")
 
+        parser.add_argument("--telegram-log-config-file", type=str, required=False,
+                            help="config file for send logs to telegram chat (e.g. 'telegram_conf.json')", default=None)
+
+        parser.add_argument("--keeper-name", type=str, required=False,
+                            help="market maker keeper name (e.g. 'Uniswap_V2_MDTETH')", default="paradex")
+
+    def __init__(self, args: list, **kwargs):
+        parser = argparse.ArgumentParser(prog='paradex-market-maker-keeper')
+        self.add_arguments(parser=parser)
+
         self.arguments = parser.parse_args(args)
         setup_logging(self.arguments)
 
-        self.web3 = kwargs['web3'] if 'web3' in kwargs else Web3(HTTPProvider(endpoint_uri=f"http://{self.arguments.rpc_host}:{self.arguments.rpc_port}",
-                                                                              request_kwargs={"timeout": self.arguments.rpc_timeout}))
+        provider = HTTPProvider(endpoint_uri=self.arguments.rpc_host,
+                                request_kwargs={'timeout': self.arguments.rpc_timeout})
+        self.web3: Web3 = kwargs['web3'] if 'web3' in kwargs else Web3(provider)
+
         self.web3.eth.defaultAccount = self.arguments.eth_from
         self.our_address = Address(self.arguments.eth_from)
         register_keys(self.web3, self.arguments.eth_key)

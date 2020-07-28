@@ -74,6 +74,9 @@ class ZrxMarketMakerKeeper:
         parser.add_argument("--buy-token-address", type=str, required=True,
                             help="Ethereum address of the buy token")
 
+        parser.add_argument("--eth-token-address", type=str, required=False,
+                            default='0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', help="Ethereum  token address")
+
         parser.add_argument("--buy-token-decimals", type=int, default=18,
                             help="Number of decimals of the buy token")
 
@@ -145,6 +148,9 @@ class ZrxMarketMakerKeeper:
         parser.add_argument("--telegram-log-config-file", type=str, required=False,
                             help="config file for send logs to telegram chat (e.g. 'telegram_conf.json')", default=None)
 
+        parser.add_argument("--keeper-name", type=str, required=False,
+                            help="market maker keeper name (e.g. 'Uniswap_V2_MDTETH')", default="zrx")
+
     def __init__(self, args: list, **kwargs):
         parser = argparse.ArgumentParser(prog='0x-market-maker-keeper')
         self.add_arguments(parser=parser)
@@ -160,6 +166,8 @@ class ZrxMarketMakerKeeper:
         self.our_address = Address(self.arguments.eth_from)
         register_keys(self.web3, self.arguments.eth_key)
 
+        self.eth_address = Address(self.arguments.eth_token_address)
+
         self.min_eth_balance = Wad.from_number(self.arguments.min_eth_balance)
         self.bands_config = ReloadableConfig(self.arguments.config)
         self.gas_price = GasPriceFactory().create_gas_price(self.arguments)
@@ -170,7 +178,7 @@ class ZrxMarketMakerKeeper:
 
         self.history = History()
 
-        # Delegate 0x specific init to a function to permit overload for 0xv2
+        # Delegate 0x specific init to a function to permit overload for 0xv3
         self.zrx_exchange = None
         self.zrx_relayer_api = None
         self.zrx_api = None

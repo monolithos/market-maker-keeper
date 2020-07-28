@@ -77,6 +77,12 @@ class ImtokenPricingServer:
         parser.add_argument("--debug", dest='debug', action='store_true',
                             help="Enable debug output")
 
+        parser.add_argument("--telegram-log-config-file", type=str, required=False,
+                            help="config file for send logs to telegram chat (e.g. 'telegram_conf.json')", default=None)
+
+        parser.add_argument("--keeper-name", type=str, required=False,
+                            help="market maker keeper name (e.g. 'Uniswap_V2_MDTETH')", default="imtoken")
+
         self.arguments = parser.parse_args(args)
         setup_logging(self.arguments)
 

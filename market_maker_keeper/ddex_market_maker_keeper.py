@@ -32,7 +32,7 @@ from market_maker_keeper.price_feed import PriceFeedFactory
 from market_maker_keeper.reloadable_config import ReloadableConfig
 from market_maker_keeper.spread_feed import create_spread_feed
 from market_maker_keeper.util import setup_logging
-from pyexchange.ddex import DdexApi, Order
+from pyexchange.ddex import DdexApiV4, Order
 from pymaker import Address
 from pymaker.approval import directly
 from pymaker.keys import register_keys
@@ -40,7 +40,7 @@ from pymaker.lifecycle import Lifecycle
 from pymaker.numeric import Wad
 from pymaker.token import ERC20Token
 from pymaker.util import eth_balance
-from pymaker.zrx import ZrxExchange
+from pymaker.zrxv3 import ZrxExchangeV3
 
 
 class DdexMarketMakerKeeper:
@@ -48,14 +48,9 @@ class DdexMarketMakerKeeper:
 
     logger = logging.getLogger()
 
-    def __init__(self, args: list, **kwargs):
-        parser = argparse.ArgumentParser(prog='ddex-market-maker-keeper')
-
-        parser.add_argument("--rpc-host", type=str, default="localhost",
-                            help="JSON-RPC host (default: `localhost')")
-
-        parser.add_argument("--rpc-port", type=int, default=8545,
-                            help="JSON-RPC port (default: `8545')")
+    def add_arguments(self, parser):
+        parser.add_argument("--rpc-host", type=str, default="http://localhost:8545",
+                            help="JSON-RPC host (default: `http://localhost:8545`)")
 
         parser.add_argument("--rpc-timeout", type=int, default=10,
                             help="JSON-RPC timeout (in seconds, default: 10)")
@@ -125,11 +120,24 @@ class DdexMarketMakerKeeper:
         parser.add_argument("--debug", dest='debug', action='store_true',
                             help="Enable debug output")
 
+        parser.add_argument("--telegram-log-config-file", type=str, required=False,
+                            help="config file for send logs to telegram chat (e.g. 'telegram_conf.json')", default=None)
+
+        parser.add_argument("--keeper-name", type=str, required=False,
+                            help="market maker keeper name (e.g. 'Uniswap_V2_MDTETH')", default="ddex")
+
+    def __init__(self, args: list, **kwargs):
+        parser = argparse.ArgumentParser(prog='ddex-market-maker-keeper')
+
+        self.add_arguments(parser=parser)
+
         self.arguments = parser.parse_args(args)
         setup_logging(self.arguments)
 
-        self.web3 = kwargs['web3'] if 'web3' in kwargs else Web3(HTTPProvider(endpoint_uri=f"http://{self.arguments.rpc_host}:{self.arguments.rpc_port}",
-                                                                              request_kwargs={"timeout": self.arguments.rpc_timeout}))
+        provider = HTTPProvider(endpoint_uri=self.arguments.rpc_host,
+                                request_kwargs={'timeout': self.arguments.rpc_timeout})
+        self.web3: Web3 = kwargs['web3'] if 'web3' in kwargs else Web3(provider)
+
         self.web3.eth.defaultAccount = self.arguments.eth_from
         self.our_address = Address(self.arguments.eth_from)
         register_keys(self.web3, self.arguments.eth_key)
@@ -151,15 +159,16 @@ class DdexMarketMakerKeeper:
         self.order_history_reporter = create_order_history_reporter(self.arguments)
 
         self.history = History()
-        self.zrx_exchange = ZrxExchange(web3=self.web3, address=Address(self.arguments.exchange_address))
-        self.ddex_api = DdexApi(self.web3,
-                                self.arguments.ddex_api_server,
-                                self.arguments.ddex_api_timeout)
+        self.zrx_exchange = ZrxExchangeV3(web3=self.web3, address=Address(self.arguments.exchange_address))
+        self.ddex_api = DdexApiV4(self.web3,
+                                  self.arguments.ddex_api_server,
+                                  self.arguments.ddex_api_timeout)
 
         self.order_book_manager = OrderBookManager(refresh_frequency=self.arguments.refresh_frequency, max_workers=1)
         self.order_book_manager.get_orders_with(lambda: self.ddex_api.get_orders(self.pair))
         self.order_book_manager.cancel_orders_with(lambda order: self.ddex_api.cancel_order(order.order_id))
-        self.order_book_manager.enable_history_reporting(self.order_history_reporter, self.our_buy_orders, self.our_sell_orders)
+        self.order_book_manager.enable_history_reporting(self.order_history_reporter, self.our_buy_orders,
+                                                         self.our_sell_orders)
         self.order_book_manager.start()
 
     def main(self):
@@ -215,8 +224,10 @@ class DdexMarketMakerKeeper:
 
         # In case of Ddex, balances returned by `our_total_balance` still contain amounts "locked"
         # by currently open orders, so we need to explicitly subtract these amounts.
-        our_buy_balance = self.our_total_balance(self.token_buy) - Bands.total_amount(self.our_buy_orders(order_book.orders))
-        our_sell_balance = self.our_total_balance(self.token_sell) - Bands.total_amount(self.our_sell_orders(order_book.orders))
+        our_buy_balance = self.our_total_balance(self.token_buy) - Bands.total_amount(
+            self.our_buy_orders(order_book.orders))
+        our_sell_balance = self.our_total_balance(self.token_sell) - Bands.total_amount(
+            self.our_sell_orders(order_book.orders))
 
         # Place new orders
         self.place_orders(bands.new_orders(our_buy_orders=self.our_buy_orders(order_book.orders),

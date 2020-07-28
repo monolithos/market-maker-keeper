@@ -1,6 +1,6 @@
 # This file is part of Maker Keeper Framework.
 #
-# Copyright (C) 2017-2018 reverendus
+# Copyright (C) 2019 grandizzy
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -20,10 +20,6 @@ import logging
 import sys
 from typing import List
 
-import time
-
-from retry import retry
-
 from market_maker_keeper.band import Bands, NewOrder
 from market_maker_keeper.control_feed import create_control_feed
 from market_maker_keeper.limit import History
@@ -33,34 +29,35 @@ from market_maker_keeper.price_feed import PriceFeedFactory
 from market_maker_keeper.reloadable_config import ReloadableConfig
 from market_maker_keeper.spread_feed import create_spread_feed
 from market_maker_keeper.util import setup_logging
-from pyexchange.gateio import GateIOApi, Order
 from pymaker.lifecycle import Lifecycle
 from pymaker.numeric import Wad
+from pyexchange.bittrex import BittrexApi, Order
 
 
-class GateIOMarketMakerKeeper:
-    """Keeper acting as a market maker on Gate.io."""
+class BitzlatoMarketMakerKeeper:
+    """Keeper acting as a market maker on bitzlato."""
 
     logger = logging.getLogger()
 
-    def __init__(self, args: list):
-        parser = argparse.ArgumentParser(prog='gateio-market-maker-keeper')
+    def add_arguments(self, parser):
 
-        parser.add_argument("--gateio-api-server", type=str, default="https://data.gate.io",
-                            help="Address of the Gate.io API server (default: 'https://data.gate.io')")
+        """exchange settings"""
 
-        parser.add_argument("--gateio-api-key", type=str, required=True,
-                            help="API key for the Gate.io API")
+        parser.add_argument("--bitzlato-api-server", type=str, default="https://bitzlato.com/api/",
+                            help="Address of the bitzlato API server (default: 'https://bitzlato.com/api/')")
 
-        parser.add_argument("--gateio-secret-key", type=str, required=True,
-                            help="Secret key for the Gate.io API")
+        # parser.add_argument("--bitzlato-api-key", type=str, required=True,
+        #                     help="API key for the bitzlato API")
 
-        parser.add_argument("--gateio-timeout", type=float, default=9.5,
-                            help="Timeout for accessing the Gate.io API (in seconds, default: 9.5)")
+        parser.add_argument("--bitzlato-secret-key", type=str, required=True,
+                            help="Secret key for the bitzlato API")
 
+        parser.add_argument("--bitzlato-timeout", type=float, default=9.5,
+                            help="Timeout for accessing the bitzlato API (in seconds, default: 9.5)")
         parser.add_argument("--pair", type=str, required=True,
                             help="Token pair (sell/buy) on which the keeper will operate")
 
+        """price settings"""
         parser.add_argument("--config", type=str, required=True,
                             help="Bands configuration file")
 
@@ -98,7 +95,11 @@ class GateIOMarketMakerKeeper:
                             help="config file for send logs to telegram chat (e.g. 'telegram_conf.json')", default=None)
 
         parser.add_argument("--keeper-name", type=str, required=False,
-                            help="market maker keeper name (e.g. 'Uniswap_V2_MDTETH')", default="gateio")
+                            help="market maker keeper name (e.g. 'Uniswap_V2_MDTETH')", default="bitzlato")
+
+    def __init__(self, args: list):
+        parser = argparse.ArgumentParser(prog='bitzlato-market-maker-keeper')
+        self.add_arguments(parser)
 
         self.arguments = parser.parse_args(args)
         setup_logging(self.arguments)
@@ -110,19 +111,19 @@ class GateIOMarketMakerKeeper:
         self.order_history_reporter = create_order_history_reporter(self.arguments)
 
         self.history = History()
-        self.gateio_api = GateIOApi(api_server=self.arguments.gateio_api_server,
-                                    api_key=self.arguments.gateio_api_key,
-                                    secret_key=self.arguments.gateio_secret_key,
-                                    timeout=self.arguments.gateio_timeout)
+
+        self.bittrex_api = BittrexApi(api_server=self.arguments.bittrex_api_server,
+                                      api_key=self.arguments.bittrex_api_key,
+                                      secret_key=self.arguments.bittrex_secret_key,
+                                      timeout=self.arguments.bittrex_timeout)
 
         self.order_book_manager = OrderBookManager(refresh_frequency=self.arguments.refresh_frequency)
-        self.order_book_manager.get_orders_with(lambda: self.gateio_api.get_orders(self.pair()))
-        self.order_book_manager.get_balances_with(lambda: self.gateio_api.get_balances())
-        self.order_book_manager.cancel_orders_with(lambda order: self.gateio_api.cancel_order(self.pair(), order.order_id))
-        self.order_book_manager.enable_history_reporting(self.order_history_reporter, self.our_buy_orders, self.our_sell_orders)
+        self.order_book_manager.get_orders_with(lambda: self.bittrex_api.get_orders(self.pair()))
+        self.order_book_manager.get_balances_with(lambda: self.bittrex_api.get_balances())
+        self.order_book_manager.cancel_orders_with(lambda order: self.bittrex_api.cancel_order(order.order_id))
+        self.order_book_manager.enable_history_reporting(self.order_history_reporter, self.our_buy_orders,
+                                                         self.our_sell_orders)
         self.order_book_manager.start()
-
-        self._last_order_creation = 0
 
     def main(self):
         with Lifecycle() as lifecycle:
@@ -134,18 +135,21 @@ class GateIOMarketMakerKeeper:
         self.order_book_manager.cancel_all_orders()
 
     def pair(self):
-        return self.arguments.pair.lower()
+        # Bittrex is inconsistent here. They call the pair `ETH-DAI`, but in reality all prices are
+        # calculated like it was an `DAI-ETH` pair. Same for `ETH-MKR`
+        return self.arguments.pair.upper().split('-')[1] + "-" + self.arguments.pair.upper().split('-')[0]
 
     def token_sell(self) -> str:
-        return self.arguments.pair.split('_')[0].upper()
+        return self.arguments.pair.split('-')[0].upper()
 
     def token_buy(self) -> str:
-        return self.arguments.pair.split('_')[1].upper()
+        return self.arguments.pair.split('-')[1].upper()
 
     def our_available_balance(self, our_balances: dict, token: str) -> Wad:
-        try:
-            return Wad.from_number(our_balances['available'][token])
-        except KeyError:
+        token_balances = list(filter(lambda coin: coin['Currency'].upper() == token, our_balances))
+        if token_balances:
+            return Wad.from_number(token_balances[0]['Available'])
+        else:
             return Wad(0)
 
     def our_sell_orders(self, our_orders: list) -> list:
@@ -156,9 +160,9 @@ class GateIOMarketMakerKeeper:
 
     def synchronize_orders(self):
         bands = Bands.read(self.bands_config, self.spread_feed, self.control_feed, self.history)
+
         order_book = self.order_book_manager.get_order_book()
         target_price = self.price_feed.get_price()
-
         # Cancel orders
         cancellable_orders = bands.cancellable_orders(our_buy_orders=self.our_buy_orders(order_book.orders),
                                                       our_sell_orders=self.our_sell_orders(order_book.orders),
@@ -179,41 +183,25 @@ class GateIOMarketMakerKeeper:
                                       our_sell_balance=self.our_available_balance(order_book.balances, self.token_sell()),
                                       target_price=target_price)[0]
 
-        if len(new_orders) > 0:
-            if self.can_create_orders():
-                self.place_orders(new_orders)
-                self.register_order_creation()
-            else:
-                self.logger.info("Too little time elapsed from last order creation, waiting...")
-
-    # Unfortunately the gate.io API does not immediately reflect the fact that our orders have
-    # been placed. In order to avoid placing orders twice we explicitly wait some time here.
-    def can_create_orders(self) -> bool:
-        return time.time() - self._last_order_creation > 15
-
-    def register_order_creation(self):
-        self._last_order_creation = time.time()
+        self.place_orders(new_orders)
 
     def place_orders(self, new_orders: List[NewOrder]):
         def place_order_function(new_order_to_be_placed):
+            price = new_order_to_be_placed.price
             amount = new_order_to_be_placed.pay_amount if new_order_to_be_placed.is_sell else new_order_to_be_placed.buy_amount
-            order_id = self.gateio_api.place_order(self.pair(), new_order_to_be_placed.is_sell, new_order_to_be_placed.price, amount)
+
+            order_id = self.bittrex_api.place_order(self.pair(), new_order_to_be_placed.is_sell, price, amount)
 
             return Order(order_id=order_id,
-                         timestamp=0,
                          pair=self.pair(),
                          is_sell=new_order_to_be_placed.is_sell,
-                         price=new_order_to_be_placed.price,
+                         price=price,
                          amount=amount,
-                         amount_symbol=self.token_sell(),
-                         money=amount * new_order_to_be_placed.price,
-                         money_symbol=self.token_buy(),
-                         initial_amount=amount,
-                         filled_amount=Wad(0))
+                         remaining_amount=amount)
 
         for new_order in new_orders:
             self.order_book_manager.place_order(lambda new_order=new_order: place_order_function(new_order))
 
 
 if __name__ == '__main__':
-    GateIOMarketMakerKeeper(sys.argv[1:]).main()
+    BittrexMarketMakerKeeper(sys.argv[1:]).main()

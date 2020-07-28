@@ -139,6 +139,9 @@ class OasisMarketMakerKeeper:
         parser.add_argument("--telegram-log-config-file", type=str, required=False,
                             help="config file for send logs to telegram chat (e.g. 'telegram_conf.json')", default=None)
 
+        parser.add_argument("--keeper-name", type=str, required=False,
+                            help="market maker keeper name (e.g. 'Uniswap_V2_MDTETH')", default="land")
+
     def __init__(self, args: list, **kwargs):
         parser = argparse.ArgumentParser(prog='oasis-market-maker-keeper')
         self.add_arguments(parser=parser)
@@ -283,7 +286,6 @@ class OasisMarketMakerKeeper:
             new_order.buy_amount = self.sell_token.unnormalize_amount(new_order.buy_amount)
             token_name = self.sell_token.name
             quote_token = self.buy_token.name
-
 
         transact = self.otc.make(p_token=p_token, pay_amount=new_order.pay_amount,
                                  b_token=b_token, buy_amount=new_order.buy_amount).transact(gas_price=self.gas_price)
