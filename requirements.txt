@@ -13,7 +13,7 @@
 -e git+https://github.com/captain13128/pymaker.git#egg=pymaker
 -e git+https://github.com/captain13128/telegram-log-handler.git#egg=telegram_log_handler
 
-requests
+requests~=2.24.0
 jsonnet == 0.9.5
 retry == 0.9.2
 websocket-client == 0.46.0
@@ -22,3 +22,8 @@ tornado == 4.5.3
 jsonschema==3.2.0
 cachetools==3.1.1
 uuid==1.30
+
+pytest~=4.6.11
+py~=1.9.0
+web3~=5.6.0
+attrdict~=2.0.1

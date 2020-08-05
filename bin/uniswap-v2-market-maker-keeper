@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+dir="$(dirname "$0")"/..
+source $dir/venv/bin/activate || exit
+export PYTHONPATH=$PYTHONPATH:$dir:$dir/lib/pymaker:$dir/lib/pyexchange:$dir/lib/ethgasstation-client:$dir/lib/gdax-client
+exec python3 -m market_maker_keeper.uniswap_v2_market_maker  --eth-key 'key_file=/home/captain/development/keystore/9ae_keystore.json,pass_file=/home/captain/development/keystore/9ae_pass.pass' --eth-from 0xC0CCab7430aEc0C30E76e1dA596263C3bdD82932 --rpc-host https://kovan.infura.io/v3/e13a288dfcde4e7bbe2c7bd5a7ee21da --gas-price 5000000 --price-feed fixed:788.3 --rpc-timeout 10 --min-eth-balance 0 --smart-gas-price --first-token-name MDT --price-feed-expiry 120 --second-token-name WETH --first-token-address 0x73a584797AA8d251b94cFcc90276d3b24f6dfA89 --first-token-decimals 18 --max-delta-on-percent 3 --second-token-address 0xd0a1e359811322d97991e03f863a0c30c2cf029c --second-token-decimals 18 --uniswap-router-address 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D --min-first-token-balance 0 --min-second-token-balance 0 --max-first-token-amount-input 10000 --max-second-token-amount-input 1

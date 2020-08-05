@@ -140,7 +140,7 @@ class OasisMarketMakerKeeper:
                             help="config file for send logs to telegram chat (e.g. 'telegram_conf.json')", default=None)
 
         parser.add_argument("--keeper-name", type=str, required=False,
-                            help="market maker keeper name (e.g. 'Uniswap_V2_MDTETH')", default="land")
+                            help="market maker keeper name (e.g. 'Land_V2_MDTETH')", default="land")
 
     def __init__(self, args: list, **kwargs):
         parser = argparse.ArgumentParser(prog='oasis-market-maker-keeper')
@@ -291,14 +291,14 @@ class OasisMarketMakerKeeper:
                                  b_token=b_token, buy_amount=new_order.buy_amount).transact(gas_price=self.gas_price)
 
         if new_order.is_sell:
-            new_order.buy_amount = self.buy_token.normalize_amount(new_order.buy_amount)
-            new_order.pay_amount = self.sell_token.normalize_amount(new_order.pay_amount)
+            # new_order.buy_amount = self.buy_token.normalize_amount(new_order.buy_amount)
+            # new_order.pay_amount = self.sell_token.normalize_amount(new_order.pay_amount)
             buy_or_sell_price = new_order.buy_amount/new_order.pay_amount
             amount = new_order.pay_amount
 
         else:
-            new_order.pay_amount = self.buy_token.normalize_amount(new_order.pay_amount)
-            new_order.buy_amount = self.sell_token.normalize_amount(new_order.buy_amount)
+            # new_order.pay_amount = self.buy_token.normalize_amount(new_order.pay_amount)
+            # new_order.buy_amount = self.sell_token.normalize_amount(new_order.buy_amount)
             buy_or_sell_price = new_order.pay_amount/new_order.buy_amount
             amount = new_order.buy_amount
 
@@ -312,7 +312,9 @@ class OasisMarketMakerKeeper:
                          pay_amount=new_order.pay_amount,
                          buy_token=buy_token,
                          buy_amount=new_order.buy_amount,
-                         timestamp=0)
+                         timestamp=0,
+                         pay_token_decimal=p_token.decimals,
+                         buy_token_decimal=b_token.decimals)
         else:
             return None
 

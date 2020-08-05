@@ -1,18 +1,22 @@
-FROM python:3.6.6
+FROM python:3.6
 
-RUN groupadd -r maker && useradd --no-log-init -r -g maker maker
+#RUN groupadd -r maker && useradd --no-log-init -r -g maker maker
 
-WORKDIR /opt/maker
+WORKDIR /app
 
-COPY bin /opt/maker/market-maker-keeper/bin
-COPY lib /opt/maker/market-maker-keeper/lib
-COPY market_maker_keeper /opt/maker/market-maker-keeper/market_maker_keeper
-COPY install.sh /opt/maker/market-maker-keeper/install.sh
-COPY requirements.txt /opt/maker/market-maker-keeper/requirements.txt
+#WORKDIR /opt/maker
+#RUN chown -R maker /opt/maker
+COPY requirements.txt requirements.txt
+RUN pip install -r requirements.txt
 
-WORKDIR /opt/maker/market-maker-keeper
-RUN pip3 install virtualenv
-RUN ./install.sh
-WORKDIR /opt/maker/market-maker-keeper/bin
+COPY bin bin
+#COPY lib /opt/maker/market-maker-keeper/lib
+COPY market_maker_keeper market_maker_keeper
+COPY docker-entrypoint.sh /docker-entrypoint.sh
 
-USER maker
+
+#WORKDIR /opt/maker/market-maker-keeper
+
+#USER maker
+
+ENTRYPOINT ["/docker-entrypoint.sh"]

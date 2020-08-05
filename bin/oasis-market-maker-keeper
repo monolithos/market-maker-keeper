@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
+##dir="$(dirname "$0")"/..
+##source $dir/venv/bin/activate || exit
+##export PYTHONPATH=$PYTHONPATH:$dir:$dir/lib/pymaker:$dir/lib/pyexchange:$dir/lib/ethgasstation-client:$dir/lib/gdax-client
+#exec python -m market_maker_keeper.oasis_market_maker_keeper $@
+
+
 dir="$(dirname "$0")"/..
 source $dir/venv/bin/activate || exit
 export PYTHONPATH=$PYTHONPATH:$dir:$dir/lib/pymaker:$dir/lib/pyexchange:$dir/lib/ethgasstation-client:$dir/lib/gdax-client
-exec python3 -m market_maker_keeper.oasis_market_maker_keeper $@
+exec python -m market_maker_keeper.oasis_market_maker_keeper $@
+
+
