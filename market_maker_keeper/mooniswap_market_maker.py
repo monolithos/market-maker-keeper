@@ -285,7 +285,7 @@ class MooniswapMarketMakerKeeper:
                 )
 
                 return self.mooniswap.swap(src=first_token, dst=second_token,
-                                           amount=input_data.map()[first_token], min_return=min_amount, referral=self.referral.address)
+                                           amount=input_data.map()[first_token], min_return=min_amount, referral=self.referral)
 
         elif delta < 0 and abs(delta) > max_delta_on_percent:
             self.logger.debug("the market price is higher than the mooniswap price")
@@ -313,7 +313,7 @@ class MooniswapMarketMakerKeeper:
                     f"To change the price, you must perform an exchange ({input_data.map()[second_token]} {second_token.address} -> {min_amount} {first_token.address})"
                 )
                 return self.mooniswap.swap(src=second_token, dst=first_token,
-                                           amount=input_data.map()[second_token], min_return=min_amount, referral=self.referral.address)
+                                           amount=input_data.map()[second_token], min_return=min_amount, referral=self.referral)
         else:
             self.logger.debug("the price for uniswap satisfies the input accuracy. The price will not be changed")
 
