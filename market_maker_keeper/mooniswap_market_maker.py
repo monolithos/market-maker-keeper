@@ -207,7 +207,14 @@ class MooniswapMarketMakerKeeper:
 
     def approve(self):
         """Approve Mooniswap to access our balances, so we can place orders."""
-        self.mooniswap.approve([self.first_token, self.second_token], directly(gas_price=self.gas_price))
+        tokens = [self.first_token, self.second_token]
+        approved_tokens = []
+
+        for token in tokens:
+            if isinstance(token, ERC20Token):
+                approved_tokens.append(token)
+
+        self.mooniswap.approve(approved_tokens, directly(gas_price=self.gas_price))
 
     def our_available_balance(self, token: ERC20Token) -> Wad:
         if token.symbol() == self.token_first.name:
