@@ -142,6 +142,9 @@ class OasisMarketMakerKeeper:
         parser.add_argument("--keeper-name", type=str, required=False,
                             help="market maker keeper name (e.g. 'Land_V2_MDTETH')", default="land")
 
+        parser.add_argument("--price-offset", type=float, required=False,
+                            help="The offset percentage of the market price", default=0)
+
     def __init__(self, args: list, **kwargs):
         parser = argparse.ArgumentParser(prog='oasis-market-maker-keeper')
         self.add_arguments(parser=parser)
@@ -239,6 +242,10 @@ class OasisMarketMakerKeeper:
         bands = Bands.read(self.bands_config, self.spread_feed, self.control_feed, self.history)
         order_book = self.order_book_manager.get_order_book()
         target_price = self.price_feed.get_price()
+
+        target_price.sell_price += (target_price.sell_price * Wad.from_number(self.arguments.price_offset)) / Wad.from_number(100)
+        target_price.buy_price += (target_price.buy_price * Wad.from_number(self.arguments.price_offset)) / Wad.from_number(100)
+
         # Cancel orders
         cancellable_orders = bands.cancellable_orders(our_buy_orders=self.our_buy_orders(order_book.orders),
                                                       our_sell_orders=self.our_sell_orders(order_book.orders),
