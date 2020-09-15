@@ -309,6 +309,11 @@ class OasisMarketMakerKeeper:
             buy_or_sell_price = new_order.pay_amount/new_order.buy_amount
             amount = new_order.buy_amount
 
+        try:
+            msg_price_changed = f"The price of {p_token.name}/{b_token.name} has changed by {'{percent}'}%. Orders will be changed"
+        except Exception as e:
+            msg_price_changed = f"The price has changed by {'{percent}'}%. Orders will be changed"
+
         if transact is not None and transact.successful and transact.result is not None:
             self.logger.info(f'Placing {buy_or_sell} order of amount {amount} {token_name} @ price {buy_or_sell_price} {quote_token}') 
             self.logger.info(f'Placing {buy_or_sell} order pay token: {p_token.name} with amount: {new_order.pay_amount}, buy token: {b_token.name} with amount: {new_order.buy_amount}')
@@ -321,7 +326,10 @@ class OasisMarketMakerKeeper:
                          buy_amount=new_order.buy_amount,
                          timestamp=0,
                          pay_token_decimal=p_token.decimals,
-                         buy_token_decimal=b_token.decimals)
+                         buy_token_decimal=b_token.decimals,
+                         b_token=b_token,
+                         p_token=p_token,
+                         msg_price_changed=msg_price_changed)
         else:
             return None
 

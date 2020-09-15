@@ -295,7 +295,13 @@ class Bands:
 
         for order in orders:
             if not any(band.includes(order, target_price) for band in bands):
-                self.logger.info(f"Order #{order.order_id} doesn't belong to any band, scheduling it for cancellation")
+                self.logger.warning(f"Order #{order.order_id} doesn't belong to any band, scheduling it for cancellation")
+
+                if hasattr(order, 'kwargs') and "msg_price_changed" in order.kwargs:
+                    delta = round((target_price.value * 100 / bands[0].order_price(order).value) - 100, 2)
+                    logger = logging.getLogger()
+                    logger.warning(order.kwargs["msg_price_changed"].format(
+                        percent=delta) + f" last_price={round(float(bands[0].order_price(order)), 2)}, new_price={round(float(target_price), 2)}")
 
                 yield order
 
