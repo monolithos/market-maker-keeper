@@ -1,15 +1,46 @@
 docker run --rm --name 'Test_Market_Maker' --mount type=bind,source="$(pwd)"/bands,target=/app/bands monolithos/market-maker-keeper \
-    --land \
-      --rpc-host https://kovan.infura.io/v3/4aaa973d71f0445f93a5f5d50ef1d1a6 \
-      --address-private-key 0x874FE575906AD08B8A5D6BEFED1CB9A9AF0DC6E1F0E2E1E37CD525F2339A79F8 \
-      --eth-from 0xC0CCab7430aEc0C30E76e1dA596263C3bdD82932 \
-      --market-address 0x6b06771bAe7F2421887ef763eb7bd99003A35c04 \
-      --buy-token-address 0x73a584797AA8d251b94cFcc90276d3b24f6dfA89 \
-      --buy-token-name MDT \
-      --buy-token-decimals 18 \
-      --sell-token-address 0xB19E3176C7967012755e1F2320623c20f9Da410b \
-      --sell-token-name MCR \
-      --sell-token-decimals 18 \
-      --bands bands_mcr_eth.json \
-      --price-feed mdt_mcr-setzer \
-      --ethgasstation-api-key 24d69a5d252b99c65ea29fb9e5edfe338fa767fc59efe940f20e93028f04
+      --mooniswap \
+        --rpc-host RPC_HOST \
+        --address-private-key PK \
+        --eth-from ADDRESS \
+        --factory-address 0x71CD6666064C3A1354a3B4dca5fA1E2D3ee7D303 \
+        --first-token-address 0x4Dfd148B532e934a2a26eA65689cf6268753e130 \
+        --first-token-name MDT \
+        --first-token-decimals 18 \
+        --second-token-address 0x0000000000000000000000000000000000000000 \
+        --second-token-name WETH \
+        --second-token-decimals 18 \
+        --bands bands_mdt_eth.json \
+        --price-feed eth_mdt-setzer \
+        --max-delta-on-percent 5.5 \
+        --ethgasstation-api-key API_KEY
+
+#--uniswap_v2 \
+#      --rpc-host RPC_HOST \
+#      --address-private-key PK \
+#      --eth-from ADDRESS \
+#      --router-address 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D \
+#      --first-token-address 0x73a584797AA8d251b94cFcc90276d3b24f6dfA89 \
+#      --first-token-name MDT \
+#      --first-token-decimals 18 \
+#      --second-token-address 0xd0A1E359811322d97991E03f863a0C30C2cF029C \
+#      --second-token-name WETH \
+#      --second-token-decimals 18 \
+#      --bands bands_mdt_eth.json \
+#      --price-feed eth_mdt-setzer \
+#      --ethgasstation-api-key API_KEY
+
+#    --land \
+#      --rpc-host RPC_HOST \
+#      --address-private-key PK \
+#      --eth-from ADDRESS \
+#      --market-address 0x6b06771bAe7F2421887ef763eb7bd99003A35c04 \
+#      --buy-token-address 0x73a584797AA8d251b94cFcc90276d3b24f6dfA89 \
+#      --buy-token-name MDT \
+#      --buy-token-decimals 18 \
+#      --sell-token-address 0xB19E3176C7967012755e1F2320623c20f9Da410b \
+#      --sell-token-name MCR \
+#      --sell-token-decimals 18 \
+#      --bands bands_mcr_eth.json \
+#      --price-feed mdt_mcr-setzer \
+#      --ethgasstation-api-key API_KEY

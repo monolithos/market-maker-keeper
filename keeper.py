@@ -159,8 +159,8 @@ if __name__ == '__main__':
             keeper_args = generate_params_line(network_params)
             keeper_args += generate_params_line(required_params) + generate_params_line(optional_params)
             keeper_args += generate_params_line(token_params) + generate_params_line(gas_params)
-            print(f"UniswapV2MarketMakerKeeper {keeper_args}")
-            # UniswapV2MarketMakerKeeper(keeper_args).main()
+            # print(f"UniswapV2MarketMakerKeeper {keeper_args}")
+            UniswapV2MarketMakerKeeper(keeper_args).main()
 
         if MARKET_MAKER_TYPE == "mooniswap":
             token_params = [
@@ -202,5 +202,5 @@ if __name__ == '__main__':
             keeper_args = generate_params_line(network_params)
             keeper_args += generate_params_line(required_params) + generate_params_line(optional_params)
             keeper_args += generate_params_line(token_params) + generate_params_line(gas_params)
-            print(f"MooniswapMarketMakerKeeper {keeper_args}")
-            # MooniswapMarketMakerKeeper(keeper_args).main()
+            # print(f"MooniswapMarketMakerKeeper {keeper_args}")
+            MooniswapMarketMakerKeeper(keeper_args).main()

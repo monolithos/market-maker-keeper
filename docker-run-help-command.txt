@@ -186,17 +186,17 @@ market maker for https://mooniswap.exchange/
                                             EXAMPLE: 18
 
         -sta   | --second-token-address     Ethereum address of the second token
-                                            EXAMPLE: 0xeD351575b9869AADA94435e0066ba38E08800b60
+                                            EXAMPLE: 0x0000000000000000000000000000000000000000
 
         -stn   | --second-token-name        Name of the second token
-                                            EXAMPLE: MCR
+                                            EXAMPLE: ETH
 
         -std   | --second-token-decimals    Decimals of the second token
                                             EXAMPLE: 18
 
         -p   | --price-feed                 Source of price feed
                                             POSSIBLE OPTIONS: eth_rub-setzer, mdt_rub-setzer, mdt_mcr-setzer, eth_mdt-setzer, usd_mdt-setzer, usd_rub-setzer, fixed:{$PRICE}
-                                            EXAMPLE: mdt_mcr-setzer
+                                            EXAMPLE: eth_mdt-setzer
 
     optional params:
         --referral-address                  Ethereum address of the referral.
