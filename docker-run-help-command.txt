@@ -1,0 +1,247 @@
+message:    The container launches Market Maker keeper.
+            To start an market maker keeper, you must set the input parameters.
+            You can see a list of all parameters by running the command:
+            docker run monolithos-market-maker-keeper --help command
+
+market-makers:                          Specify which market maker should be running
+                                        POSSIBLE OPTIONS: --land, --uniswap_v2, --mooniswap
+                                        EXAMPLE: --land
+
+LAND
+market maker for https://trade.monolith.money/
+    required params:
+        -rpc | --rpc-host                   Url of the rpc, ethereum node, which will be used to interact with the blockchain
+                                            EXAPLE: http://192.168.0.5:8545
+
+        -pk  | --address-private-key        Private key ethereum account serving market maker
+                                            EXAMPLE: 0x0000000000000000000000000000000000000000001
+
+        -a   | --eth-from                   Address ethereum account serving market maker
+                                            EXAMPLE:0x0000000000000000000000001
+
+        -m   | --market-address             Ethereum address of the Land Trade contract
+                                            EXAMPLE: 0xa76EA705783b595b420bb36F196540a2Ed629673
+
+        -bta   | --buy-token-address        Ethereum address of the buy token
+                                            EXAMPLE: 0x4Dfd148B532e934a2a26eA65689cf6268753e130
+
+        -btn   | --buy-token-name           Name of the buy token
+                                            EXAMPLE: MDT
+
+        -btd   | --buy-token-decimals       Decimals of the buy token
+                                            EXAMPLE: 18
+
+        -sta   | --sell-token-address       Ethereum address of the sell token
+                                            EXAMPLE: 0xeD351575b9869AADA94435e0066ba38E08800b60
+
+        -stn   | --sell-token-name          Name of the sell token
+                                            EXAMPLE: MCR
+
+        -std   | --sell-token-decimals      Decimals of the sell token
+                                            EXAMPLE: 18
+
+        -b   | --bands                      Bands configuration file name
+                                            EXAMPLE: my_bands.json
+
+        -p   | --price-feed                 Source of price feed
+                                            EXAMPLE: mdt_mcr-setzer
+
+    optional params:
+        --price-feed-expiry                 Maximum age of the price feed (in seconds).
+                                            DEFAULT: 120
+                                            EXAMPLE: 180
+
+        --round-places                      Number of decimal places to round order prices.
+                                            DEFAULT: 2
+                                            EXAMPLE: 6
+
+        --min-eth-balance                   Minimum ETH balance below which keeper will cease operation
+                                            DEFAULT: 0
+                                            EXAMPLE: 1.5
+
+        --rpc-timeout                       JSON-RPC timeout (in seconds)
+                                            DEFAULT: 10
+                                            EXAMPLE: 20
+
+        --refresh-frequency                 Order book refresh frequency (in seconds)
+                                            DEFAULT: 10
+                                            EXAMPLE: 100
+
+        --market-support-address            Ethereum address of the Land Trade support contract
+                                            EXAMPLE: 0x7b10Bb8E7402d7B8CeD21123821D8ddaB6cDF113
+
+        --price-offset                      The offset percentage of the market price
+                                            DEFAULT: 0
+                                            EXAMPLE: -5.5
+
+        --ethgasstation-api-key             ethgasstation (https://data.defipulse.com/dashboard/egs) API key
+                                            EXAMPLE: 24000000000099c65e0000000000fe338fa0000000000940f20000000000
+
+        --fixed-gas-price                   Uses a fixed value (in Gwei) instead of an external API to determine initial gas
+                                            Places an upper bound (in Gwei) on the amount of gas to use for a single TX
+
+UNISWAP_V2
+market maker for https://app.uniswap.org/
+    required params:
+        -rpc | --rpc-host                   Url of the rpc, ethereum node, which will be used to interact with the blockchain
+                                            EXAPLE: http://192.168.0.5:8545
+
+        -pk  | --address-private-key        Private key ethereum account serving market maker
+                                            EXAMPLE: 0x0000000000000000000000000000000000000000001
+
+        -a   | --eth-from                   Address ethereum account serving market maker
+                                            EXAMPLE:0x0000000000000000000000001
+
+        -ra   | --router-address            Ethereum address of the Uniswap Router v2 contract
+                                            EXAMPLE: 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D
+
+        -fta   | --first-token-address      Ethereum address of the first token
+                                            EXAMPLE: 0x4Dfd148B532e934a2a26eA65689cf6268753e130
+
+        -ftn   | --first-token-name         Name of the first token
+                                            EXAMPLE: MDT
+
+        -ftd   | --first-token-decimals     Decimals of the first token
+                                            EXAMPLE: 18
+
+        -sta   | --second-token-address     Ethereum address of the second token
+                                            EXAMPLE: 0xeD351575b9869AADA94435e0066ba38E08800b60
+
+        -stn   | --second-token-name        Name of the second token
+                                            EXAMPLE: MCR
+
+        -std   | --second-token-decimals    Decimals of the second token
+                                            EXAMPLE: 18
+
+        -p   | --price-feed                 Source of price feed
+                                            EXAMPLE: mdt_mcr-setzer
+
+    optional params:
+        --price-feed-expiry                 Maximum age of the price feed (in seconds).
+                                            DEFAULT: 120
+                                            EXAMPLE: 180
+
+        --max-delta-on-percent              Delta permissible margin.
+                                            DEFAULT: 3
+                                            EXAMPLE: 5.5
+
+        --max-first-token-amount-input      The maximum allowed number of first tokens that can be exchanged for installation.
+                                            DEFAULT: 10000
+                                            EXAMPLE: 500.5
+
+        --max-second-token-amount-input     The maximum allowed number of first tokens that can be exchanged for installation.
+                                            DEFAULT: 10000
+                                            EXAMPLE: 500.5
+
+        --min-eth-balance                   Minimum ETH balance below which keeper will cease operation
+                                            DEFAULT: 0
+                                            EXAMPLE: 1.5
+
+        --min-first-token-balance           Minimum first token balance below which keeper will cease operation
+                                            DEFAULT: 0
+                                            EXAMPLE: 1000.5
+
+        --min-second-token-balance          Minimum second token balance below which keeper will cease operation
+                                            DEFAULT: 0
+                                            EXAMPLE: 1000.5
+
+        --rpc-timeout                       JSON-RPC timeout (in seconds)
+                                            DEFAULT: 10
+                                            EXAMPLE: 20
+
+        --refresh-frequency                 Order book refresh frequency (in seconds)
+                                            DEFAULT: 10
+                                            EXAMPLE: 100
+
+        --ethgasstation-api-key             ethgasstation (https://data.defipulse.com/dashboard/egs) API key
+                                            EXAMPLE: 24000000000099c65e0000000000fe338fa0000000000940f20000000000
+
+        --fixed-gas-price                   Uses a fixed value (in Gwei) instead of an external API to determine initial gas
+                                            Places an upper bound (in Gwei) on the amount of gas to use for a single TX
+
+MOONISWAP
+market maker for https://mooniswap.exchange/
+    required params:
+        -rpc | --rpc-host                   Url of the rpc, ethereum node, which will be used to interact with the blockchain
+                                            EXAPLE: http://192.168.0.5:8545
+
+        -pk  | --address-private-key        Private key ethereum account serving market maker
+                                            EXAMPLE: 0x0000000000000000000000000000000000000000001
+
+        -a   | --eth-from                   Address ethereum account serving market maker
+                                            EXAMPLE:0x0000000000000000000000001
+
+        -fa   | --factory-address           Ethereum address of the Mooniswap factory contract
+                                            EXAMPLE: 0x71CD6666064C3A1354a3B4dca5fA1E2D3ee7D303
+
+        -fta   | --first-token-address      Ethereum address of the first token
+                                            EXAMPLE: 0x4Dfd148B532e934a2a26eA65689cf6268753e130
+
+        -ftn   | --first-token-name         Name of the first token
+                                            EXAMPLE: MDT
+
+        -ftd   | --first-token-decimals     Decimals of the first token
+                                            EXAMPLE: 18
+
+        -sta   | --second-token-address     Ethereum address of the second token
+                                            EXAMPLE: 0xeD351575b9869AADA94435e0066ba38E08800b60
+
+        -stn   | --second-token-name        Name of the second token
+                                            EXAMPLE: MCR
+
+        -std   | --second-token-decimals    Decimals of the second token
+                                            EXAMPLE: 18
+
+        -p   | --price-feed                 Source of price feed
+                                            POSSIBLE OPTIONS: eth_rub-setzer, mdt_rub-setzer, mdt_mcr-setzer, usd_mdt-setzer, usd_rub-setzer, fixed:{$PRICE}
+                                            EXAMPLE: mdt_mcr-setzer
+
+    optional params:
+        --referral-address                  Ethereum address of the referral.
+                                            EXAMPLE: 0xC0CCab7430aEc0C30E76e1dA596263C3bdD82932
+
+        --price-feed-expiry                 Maximum age of the price feed (in seconds).
+                                            DEFAULT: 120
+                                            EXAMPLE: 180
+
+        --max-delta-on-percent              Delta permissible margin.
+                                            DEFAULT: 3
+                                            EXAMPLE: 5.5
+
+        --max-first-token-amount-input      The maximum allowed number of first tokens that can be exchanged for installation.
+                                            DEFAULT: 10000
+                                            EXAMPLE: 500.5
+
+        --max-second-token-amount-input     The maximum allowed number of first tokens that can be exchanged for installation.
+                                            DEFAULT: 10000
+                                            EXAMPLE: 500.5
+
+        --min-eth-balance                   Minimum ETH balance below which keeper will cease operation
+                                            DEFAULT: 0
+                                            EXAMPLE: 1.5
+
+        --min-first-token-balance           Minimum first token balance below which keeper will cease operation
+                                            DEFAULT: 0
+                                            EXAMPLE: 1000.5
+
+        --min-second-token-balance          Minimum second token balance below which keeper will cease operation
+                                            DEFAULT: 0
+                                            EXAMPLE: 1000.5
+
+        --rpc-timeout                       JSON-RPC timeout (in seconds)
+                                            DEFAULT: 10
+                                            EXAMPLE: 20
+
+        --refresh-frequency                 Order book refresh frequency (in seconds)
+                                            DEFAULT: 10
+                                            EXAMPLE: 100
+
+        --ethgasstation-api-key             ethgasstation (https://data.defipulse.com/dashboard/egs) API key
+                                            EXAMPLE: 24000000000099c65e0000000000fe338fa0000000000940f20000000000
+
+        --fixed-gas-price                   Uses a fixed value (in Gwei) instead of an external API to determine initial gas
+                                            Places an upper bound (in Gwei) on the amount of gas to use for a single TX
+
+
+Docker image created by the Monolithos team
+github: https://github.com/monolithos/market-maker-keeper

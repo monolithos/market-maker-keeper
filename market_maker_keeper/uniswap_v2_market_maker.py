@@ -106,13 +106,13 @@ class UniswapV2MarketMakerKeeper:
         parser.add_argument("--price-feed-expiry", type=int, default=120,
                             help="Maximum age of the price feed (in seconds, default: 120)")
 
-        parser.add_argument("--max-delta-on-percent", type=str, default=3,
+        parser.add_argument("--max-delta-on-percent", type=float, default=3,
                             help="Delta permissible margin")
 
         parser.add_argument("--max-first-token-amount-input", type=float, default=10000,
                             help="The maximum allowed number of first tokens that can be exchanged for installation.")
 
-        parser.add_argument("--max-second-token-amount-input", type=float, default=1,
+        parser.add_argument("--max-second-token-amount-input", type=float, default=10000,
                             help="The maximum allowed number of second tokens that can be exchanged for installation.")
 
         parser.add_argument("--min-eth-balance", type=float, default=0,

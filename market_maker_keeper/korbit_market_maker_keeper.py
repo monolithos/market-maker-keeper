@@ -187,5 +187,6 @@ class KorbitMarketMakerKeeper:
         for new_order in new_orders:
             self.order_book_manager.place_order(lambda new_order=new_order: place_order_function(new_order))
 
+
 if __name__ == '__main__':
     KorbitMarketMakerKeeper(sys.argv[1:]).main()
