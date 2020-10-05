@@ -277,8 +277,17 @@ class PriceFeedFactory:
         elif price_feed_argument == 'eth_rub-setzer':
             return SetzerPriceFeed('ETHRUB', expiry=price_feed_expiry_argument)
 
+        elif price_feed_argument == 'usd_rub-setzer':
+            return SetzerPriceFeed('USDRUB', expiry=price_feed_expiry_argument)
+
         elif price_feed_argument == 'mdt_rub-setzer':
             return SetzerPriceFeed('MDTRUB', expiry=price_feed_expiry_argument)
+
+        elif price_feed_argument == 'eth_mdt-setzer':
+            return SetzerPriceFeed('ETHMDT', expiry=price_feed_expiry_argument)
+
+        elif price_feed_argument == 'usd_mdt-setzer':
+            return SetzerPriceFeed('USDMDT', expiry=price_feed_expiry_argument)
 
         elif price_feed_argument == 'mdt_mcr-setzer':
             return SetzerPriceFeed('MDTMCR', expiry=price_feed_expiry_argument)

@@ -1,5 +1,0 @@
-version: '3'
-services:
-  keeper:
-    build: .
-    container_name: auctionist

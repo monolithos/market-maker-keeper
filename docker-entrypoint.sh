@@ -112,7 +112,7 @@ while [ "$1" != "" ]; do
                                         -z $PRICE_FEED || \
                                         -z $ETH_FROM ]] ;
                                   then
-                                    cat docker-run-required-params.txt
+                                    echo 'Please specify all required parameters for this type of Market Maker. See -h or --help'
                                     echo
                                     exit 1
                                   fi
@@ -235,7 +235,7 @@ while [ "$1" != "" ]; do
                                         -z $PRICE_FEED || \
                                         -z $ETH_FROM ]] ;
                                   then
-                                    cat docker-run-required-params.txt
+                                    echo 'Please specify all required parameters for this type of Market Maker. See -h or --help'
                                     echo
                                     exit 1
                                   fi
@@ -245,7 +245,7 @@ while [ "$1" != "" ]; do
         --mooniswap )                  shift
                                   echo --------------------mooniswap--------------------
                                   export MARKET_MAKER_TYPE=mooniswap
-                        https://app.uniswap.org/          while [ "$1" != "" ]; do
+                        while [ "$1" != "" ]; do
                                       case $1 in
                                           -rpc | --rpc-host )                            shift
                                                                                   export RPC_HOST=$1
@@ -361,7 +361,7 @@ while [ "$1" != "" ]; do
                                         -z $PRICE_FEED || \
                                         -z $ETH_FROM ]] ;
                                   then
-                                    cat docker-run-required-params.txt
+                                    echo 'Please specify all required parameters for this type of Market Maker. See -h or --help'
                                     echo
                                     exit 1
                                   fi

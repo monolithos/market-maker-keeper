@@ -44,6 +44,7 @@ market maker for https://trade.monolith.money/
                                             EXAMPLE: my_bands.json
 
         -p   | --price-feed                 Source of price feed
+                                            POSSIBLE OPTIONS: eth_rub-setzer, mdt_rub-setzer, mdt_mcr-setzer, eth_mdt-setzer, usd_mdt-setzer, usd_rub-setzer, fixed:{$PRICE}
                                             EXAMPLE: mdt_mcr-setzer
 
     optional params:
@@ -114,6 +115,7 @@ market maker for https://app.uniswap.org/
                                             EXAMPLE: 18
 
         -p   | --price-feed                 Source of price feed
+                                            POSSIBLE OPTIONS: eth_rub-setzer, mdt_rub-setzer, mdt_mcr-setzer, eth_mdt-setzer, usd_mdt-setzer, usd_rub-setzer, fixed:{$PRICE}
                                             EXAMPLE: mdt_mcr-setzer
 
     optional params:
@@ -193,7 +195,7 @@ market maker for https://mooniswap.exchange/
                                             EXAMPLE: 18
 
         -p   | --price-feed                 Source of price feed
-                                            POSSIBLE OPTIONS: eth_rub-setzer, mdt_rub-setzer, mdt_mcr-setzer, usd_mdt-setzer, usd_rub-setzer, fixed:{$PRICE}
+                                            POSSIBLE OPTIONS: eth_rub-setzer, mdt_rub-setzer, mdt_mcr-setzer, eth_mdt-setzer, usd_mdt-setzer, usd_rub-setzer, fixed:{$PRICE}
                                             EXAMPLE: mdt_mcr-setzer
 
     optional params:

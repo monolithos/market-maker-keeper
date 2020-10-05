@@ -13,7 +13,7 @@ setup(
     author_email='',
     description='',
     install_requires=[
-        "pymaker==1.1.*",
+        "pymaker==1.2.*",
         "pygasprice-client==1.0.*",
         "forex_python",
         "ccxt",

@@ -118,7 +118,7 @@ if __name__ == '__main__':
             keeper_args += generate_params_line(required_params) + generate_params_line(optional_params)
             keeper_args += generate_params_line(token_params) + generate_params_line(gas_params)
             print(f"OasisMarketMakerKeeper {keeper_args}")
-            # OasisMarketMakerKeeper(keeper_args).main()
+            OasisMarketMakerKeeper(keeper_args).main()
 
         if MARKET_MAKER_TYPE == "uniswap_v2":
             token_params = [
