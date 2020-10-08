@@ -3,6 +3,40 @@ message:    The container launches Market Maker keeper.
             You can see a list of all parameters by running the command:
             docker run monolithos-market-maker-keeper --help command
 
+
+For start keeper
+    run:
+        mkdir path/to/bands/dir && touch path/to/bands/dir/band.json
+    Write to the band path/to/bands/dir/band.json your settings
+    run:
+        docker run --rm --name 'MyMarketLandKeeper' --mount type=bind,source=path/to/bands/dir,target=/app/bands monolithos/market-maker-keeper \
+            --land \
+                --rpc-host http://192.168.0.5:8545 \
+                --address-private-key 0x00KEEPER_ETH_PRIVATE_KEY000000000000000000001 \
+                --eth-from 0x00KEEPER_ETH_ADDRESS001 \
+                --market-address 0xa76EA705783b595b420bb36F196540a2Ed629673 \
+                --buy-token-address 0x4Dfd148B532e934a2a26eA65689cf6268753e130 \
+                --buy-token-name MDT \
+                --buy-token-decimals 18 \
+                --sell-token-address 0xdac17f958d2ee523a2206206994597c13d831ec7 \
+                --sell-token-name USDT \
+                --sell-token-decimals 6 \
+                --bands band.json \
+                --price-feed usd_mdt-setzer
+
+For change band.json
+    run:
+        docker cp new_band.json MyMarketLandKeeper:/app/bands/band.json
+
+For stop keeper
+    run:
+        docker exec MyMarketLandKeeper kill -2 $(docker exec MyMarketLandKeeper pgrep python)
+
+
+
+
+
+
 market-makers:                          Specify which market maker should be running
                                         POSSIBLE OPTIONS: --land, --uniswap_v2, --mooniswap
                                         EXAMPLE: --land
@@ -80,6 +114,17 @@ market maker for https://trade.monolith.money/
 
         --fixed-gas-price                   Uses a fixed value (in Gwei) instead of an external API to determine initial gas
                                             Places an upper bound (in Gwei) on the amount of gas to use for a single TX
+                                            EXAMPLE: 45
+
+        --telegram-bot-token                A token from your telegrams of the bot that will send the logs with errors
+                                            EXAMPLE: 1000000006:AAGwDemoXDemopDemoNIS-F8bDemoXDemo8
+
+        --keeper-name                       Name of your keeper
+                                            EXAMPLE: my_favorite_Keeper
+
+        --telegram-chat-id                  A list of telegram chat id to which logs will be sent by your bot.
+                                            THE LIST OF ADDRESSES IS PASSED AS FOLLOWS: --telegram-chat-id 000000001 --telegram-chat-id -000000001
+                                            EXAPLE: --telegram-chat-id -000000001
 
 UNISWAP_V2
 market maker for https://app.uniswap.org/
@@ -160,6 +205,16 @@ market maker for https://app.uniswap.org/
 
         --fixed-gas-price                   Uses a fixed value (in Gwei) instead of an external API to determine initial gas
                                             Places an upper bound (in Gwei) on the amount of gas to use for a single TX
+
+        --telegram-bot-token                A token from your telegrams of the bot that will send the logs with errors
+                                            EXAMPLE: 1000000006:AAGwDemoXDemopDemoNIS-F8bDemoXDemo8
+
+        --keeper-name                       Name of your bot
+                                            EXAMPLE: my_favorite_Keeper
+
+        --telegram-chat-id                  A list of telegram chat id to which logs will be sent by your bot.
+                                            THE LIST OF ADDRESSES IS PASSED AS FOLLOWS: --telegram-chat-id 000000001 --telegram-chat-id -000000001
+                                            EXAPLE: --telegram-chat-id -000000001
 
 MOONISWAP
 market maker for https://mooniswap.exchange/
@@ -243,6 +298,16 @@ market maker for https://mooniswap.exchange/
 
         --fixed-gas-price                   Uses a fixed value (in Gwei) instead of an external API to determine initial gas
                                             Places an upper bound (in Gwei) on the amount of gas to use for a single TX
+
+        --telegram-bot-token                A token from your telegrams of the bot that will send the logs with errors
+                                            EXAMPLE: 1000000006:AAGwDemoXDemopDemoNIS-F8bDemoXDemo8
+
+        --keeper-name                       Name of your bot
+                                            EXAMPLE: my_favorite_Keeper
+
+        --telegram-chat-id                  A list of telegram chat id to which logs will be sent by your bot.
+                                            THE LIST OF ADDRESSES IS PASSED AS FOLLOWS: --telegram-chat-id 000000001 --telegram-chat-id -000000001
+                                            EXAPLE: --telegram-chat-id -000000001
 
 
 Docker image created by the Monolithos team
