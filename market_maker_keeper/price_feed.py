@@ -281,7 +281,7 @@ class PriceFeedFactory:
             return SetzerPriceFeed('USDRUB', expiry=price_feed_expiry_argument)
 
         elif price_feed_argument == 'mdt_rub-setzer':
-            return SetzerPriceFeed('MDTRUB', expiry=price_feed_expiry_argument)
+            return SetzerPriceFeed('MDTMCR', expiry=price_feed_expiry_argument)
 
         elif price_feed_argument == 'eth_mdt-setzer':
             return SetzerPriceFeed('ETHMDT', expiry=price_feed_expiry_argument)

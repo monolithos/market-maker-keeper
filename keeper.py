@@ -142,7 +142,7 @@ if __name__ == '__main__':
             gas_params = [
                 ('--smart-gas-price', is_smart_gas_price),
                 ('--ethgasstation-api-key', ETHGASSTATION_API_KEY),
-                ('--gas-price', EnvParam(env_name="FIXED_GAS_PRICE", cast_type=float, required=False).value),
+                ('--gas-price', EnvParam(env_name="FIXED_GAS_PRICE", cast_type=int, required=False).value),
             ]
 
             keeper_args = generate_params_line(network_params)
@@ -185,7 +185,7 @@ if __name__ == '__main__':
             gas_params = [
                 ('--smart-gas-price', is_smart_gas_price),
                 ('--ethgasstation-api-key', ETHGASSTATION_API_KEY),
-                ('--gas-price', EnvParam(env_name="FIXED_GAS_PRICE", cast_type=float, required=False).value),
+                ('--gas-price', EnvParam(env_name="FIXED_GAS_PRICE", cast_type=int, required=False).value),
             ]
 
             keeper_args = generate_params_line(network_params)
@@ -229,7 +229,7 @@ if __name__ == '__main__':
             gas_params = [
                 ('--smart-gas-price', is_smart_gas_price),
                 ('--ethgasstation-api-key', ETHGASSTATION_API_KEY),
-                ('--gas-price', EnvParam(env_name="FIXED_GAS_PRICE", cast_type=float, required=False).value),
+                ('--gas-price', EnvParam(env_name="FIXED_GAS_PRICE", cast_type=int, required=False).value),
             ]
 
             keeper_args = generate_params_line(network_params)

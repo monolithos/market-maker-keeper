@@ -112,8 +112,8 @@ market maker for https://trade.monolith.money/
         --ethgasstation-api-key             ethgasstation (https://data.defipulse.com/dashboard/egs) API key
                                             EXAMPLE: 24000000000099c65e0000000000fe338fa0000000000940f20000000000
 
-        --fixed-gas-price                   Uses a fixed value (in Gwei) instead of an external API to determine initial gas
-                                            Places an upper bound (in Gwei) on the amount of gas to use for a single TX
+        --fixed-gas-price                   Uses a fixed value (in wei) instead of an external API to determine initial gas
+                                            Places an upper bound (in wei) on the amount of gas to use for a single TX
                                             EXAMPLE: 45
 
         --telegram-bot-token                A token from your telegrams of the bot that will send the logs with errors
@@ -203,8 +203,8 @@ market maker for https://app.uniswap.org/
         --ethgasstation-api-key             ethgasstation (https://data.defipulse.com/dashboard/egs) API key
                                             EXAMPLE: 24000000000099c65e0000000000fe338fa0000000000940f20000000000
 
-        --fixed-gas-price                   Uses a fixed value (in Gwei) instead of an external API to determine initial gas
-                                            Places an upper bound (in Gwei) on the amount of gas to use for a single TX
+        --fixed-gas-price                   Uses a fixed value (in wei) instead of an external API to determine initial gas
+                                            Places an upper bound (in wei) on the amount of gas to use for a single TX
 
         --telegram-bot-token                A token from your telegrams of the bot that will send the logs with errors
                                             EXAMPLE: 1000000006:AAGwDemoXDemopDemoNIS-F8bDemoXDemo8
@@ -296,8 +296,8 @@ market maker for https://mooniswap.exchange/
         --ethgasstation-api-key             ethgasstation (https://data.defipulse.com/dashboard/egs) API key
                                             EXAMPLE: 24000000000099c65e0000000000fe338fa0000000000940f20000000000
 
-        --fixed-gas-price                   Uses a fixed value (in Gwei) instead of an external API to determine initial gas
-                                            Places an upper bound (in Gwei) on the amount of gas to use for a single TX
+        --fixed-gas-price                   Uses a fixed value (in wei) instead of an external API to determine initial gas
+                                            Places an upper bound (in wei) on the amount of gas to use for a single TX
 
         --telegram-bot-token                A token from your telegrams of the bot that will send the logs with errors
                                             EXAMPLE: 1000000006:AAGwDemoXDemopDemoNIS-F8bDemoXDemo8
